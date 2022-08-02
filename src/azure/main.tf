@@ -40,3 +40,21 @@ resource "azurerm_container_registry" "acr" {
     }
   }
 }
+
+//Storage Account Creation
+resource "azurerm_storage_account" "asc" {
+  name                     = "JenkinsToCloudASC"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  count                    = var.AFS_ON ? 1:0
+}
+
+//Storage Share Creation
+resource "azurerm_storage_share" "ass" {
+  name                 = "TempFileShare"
+  storage_account_name = azurerm_storage_account.asc.name
+  quota                = 5
+  count                    = var.AFS_ON ? 1:0
+}
