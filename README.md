@@ -16,6 +16,10 @@ Setup project and create Azure infrastructure
 * Azure account with a valid subscription
 * Installed [azure cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
+### Clone the repository
+* `git clone https://github.com/Mu-Nirvana/jenkins-cloud-create.git`
+* Navigate to azure directory `cd src/azure`
+
 ### Setup azure account
 1. Login to azure by running `az login`
 2. Copy the relevant subscription id from the output of the above. Ex. `"id": "35akss-subscription-id",`
@@ -34,7 +38,7 @@ The output includes credentials that you must protect. Be sure that you do not i
 ```
 ### Configure terraform and create infrastrcture
 1. Create a file named terraform.tfvars in [src/azure](src/azure) and add the following:
-```
+``` tf
 client_id       = "<APPID_VALUE>"
 client_secret   = "<PASSWORD_VALUE>"
 tenant_id       = "<TENANT_VALUE>"
