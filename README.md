@@ -1,3 +1,56 @@
+
 # jenkins-cloud-create
-Launch supporting infrastructure for cloud-based Jenkins server. 
-Designed to launch an image generated using [Mu-Nirvana/jenkin-host-to-container](https://github.com/Mu-Nirvana/jenkins-host-to-container)
+Launch supporting infrastructure for cloud-based Jenkins server on AKS and EKS (EKS support coming soon).
+
+Sister project to containerize existing Jenkins server for use on the cloud: [Mu-Nirvana/jenkin-host-to-container](https://github.com/Mu-Nirvana/jenkins-host-to-container)
+
+## Project structure
+* [src](src) Contains the source terraform
+* [src/azure](src/azure) Azure Terraform
+* [examples](examples) Contains example files for terraform variable inputs
+
+## Getting started (AKS)
+Setup project and create Azure infrastructure
+
+### Prerequisites
+* Azure account with a valid subscription
+* Installed [azure cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+
+### Setup azure account
+1. Login to azure by running `az login`
+2. Copy the relevant subscription id from the output of the above. Ex. `"id": "35akss-subscription-id",`
+3. Run `az account set --subscription "<SUBSCRIPTION_ID>"` to set the correct subscription
+4. Create a service principal with: `az ad sp create-for-rbac --role="Owner" --scopes="/subscriptions/<SUBSCRIPTION_ID>"`
+	The output should look something like: 
+```
+Creating 'Contributor' role assignment under scope '/subscriptions/35akss-subscription-id'
+The output includes credentials that you must protect. Be sure that you do not include these credentials in your code or check the credentials into your source control. For more information, see https://aka.ms/azadsp-cli
+{
+  "appId": "xxxxxx-xxx-xxxx-xxxx-xxxxxxxxxx",
+  "displayName": "azure-cli-2022-xxxx",
+  "password": "xxxxxx~xxxxxx~xxxxx",
+  "tenant": "xxxxx-xxxx-xxxxx-xxxx-xxxxx"
+}
+```
+### Configure terraform and create infrastrcture
+1. Create a file named terraform.tfvars in [src/azure](src/azure) and add the following:
+```
+client_id       = "<APPID_VALUE>"
+client_secret   = "<PASSWORD_VALUE>"
+tenant_id       = "<TENANT_VALUE>"
+subscription_id = "<SUBSCRIPTION_ID>"
+location        = "<CLOUD_REGION>"
+app_name        = "<APPLICATION_NAME>"
+```
+Note: `app_name` will be used as the prefix for Azure cloud resources
+
+2. Run `terraform init` in [src/azure](src/azure) to initialize terraform
+3. Run `terraform apply` and review infrastructure plan
+4. Type `yes` to continue if plan is correct
+
+After the resources are created, the configuration can be viewed on the [Azure portal](https://portal.azure.com/)
+
+### Attach kubectl (optional)
+If kubectl is installed, the AKS cluster can be attached with the following command
+* Run `az aks get-credentials --resource-group $(terraform output -raw resource_group_name) --name $(terraform output -raw kubernetes_cluster_name)`
+
