@@ -29,5 +29,5 @@ variable "location" {
 
 variable "app_name" {
   description = "Application name to be used in indentification on Azure"
-  type        = string 
+  type        = string
 }
