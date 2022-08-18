@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.0.2"
     }
+    random = {
+      source = "hashicorp/random"
+      version = "3.3.2"
+    }
   }
 
   required_version = ">= 1.1.0"
@@ -19,42 +23,56 @@ provider "azurerm" {
   tenant_id       = var.tenant_id
 }
 
+provider "random" {}
+
+resource "random_id" "app_id" {
+  keepers = {
+    app_name = var.app_name
+  }
+  byte_length = 8
+}
+
 resource "azurerm_resource_group" "rg" {
-  name     = "JenkinsRG"
+  name     = "${var.app_name}RG-${random_id.app_id.hex}"
   location = var.location
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "JenkinsToCloudCR"
+  name                = "${var.app_name}CR-${random_id.app_id.hex}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Premium"
-  admin_enabled       = true
+}
 
-  network_rule_set {
-    default_action = "Deny"
+resource "azurerm_kubernetes_cluster" "aks" {
+  name                = "${var.app_name}AKS-${random_id.app_id.hex}"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  dns_prefix          = "${var.app_name}-${random_id.app_id.hex}"
 
-    ip_rule {
-      action   = "Allow"
-      ip_range = var.ip_range
-    }
+  default_node_pool {
+    name       = "default"
+    node_count = 1
+    vm_size    = "Standard_D2_v2"
+  }
+
+  identity {
+    type = "SystemAssigned"
   }
 }
 
-//Storage Account Creation
-resource "azurerm_storage_account" "asc" {
-  name                     = "JenkinsToCloudASC"
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  count                    = var.AFS_ON ? 1:0
+resource "azurerm_role_assignment" "pullrole" {
+  principal_id                     = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+  role_definition_name             = "AcrPull"
+  scope                            = azurerm_container_registry.acr.id
 }
 
-//Storage Share Creation
-resource "azurerm_storage_share" "ass" {
-  name                 = "TempFileShare"
-  storage_account_name = azurerm_storage_account.asc.name
-  quota                = 5
-  count                    = var.AFS_ON ? 1:0
+output "client_certificate" {
+  value     = azurerm_kubernetes_cluster.aks.kube_config.0.client_certificate
+  sensitive = true
+}
+
+output "kube_config" {
+  value = azurerm_kubernetes_cluster.aks.kube_config_raw
+  sensitive = true
 }

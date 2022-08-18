@@ -27,14 +27,7 @@ variable "location" {
   type        = string
 }
 
-variable "ip_range" {
-  description = "CIDR range of IP addresses allowed to access resources"
-  type        = string
-  sensitive   = true
-}
-
-variable "AFS_ON" {
-  description = "Controls creation of the Azure file share used during initial setup"
-  type        = bool
-  default     = false
+variable "app_name" {
+  description = "Application name to be used in indentification on Azure"
+  type        = string 
 }
