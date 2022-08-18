@@ -29,7 +29,7 @@ resource "random_id" "app_id" {
   keepers = {
     app_name = var.app_name
   }
-  byte_length = 8
+  byte_length = 4
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -38,7 +38,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "${var.app_name}CR-${random_id.app_id.hex}"
+  name                = "${var.app_name}CR${random_id.app_id.hex}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Premium"
