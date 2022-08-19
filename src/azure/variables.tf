@@ -31,3 +31,9 @@ variable "app_name" {
   description = "Application name to be used in indentification on Azure"
   type        = string
 }
+
+variable "acr_admin" {
+  description = "Controls creation of admin login for the Azure Container Registry"
+  type = bool
+  default = false
+}

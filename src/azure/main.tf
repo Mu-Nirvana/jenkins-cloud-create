@@ -42,6 +42,7 @@ resource "azurerm_container_registry" "acr" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Premium"
+  admin_enabled = var.acr_admin
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {

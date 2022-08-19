@@ -9,6 +9,9 @@ Sister project to containerize existing Jenkins server for use on the cloud: [Mu
 * [src/azure](src/azure) Azure Terraform
 * [examples](examples) Contains example files for terraform variable inputs
 
+## Infrastructure overview
+The terraform projects in this repository configure a basic kubernetes cluster on the cloud, along with a container registry to privately host container images. This is designed to support the creation or migration of a cloud-based Jenkins server
+
 ## Getting started (AKS)
 Setup project and create Azure infrastructure
 
@@ -46,6 +49,8 @@ subscription_id = "<SUBSCRIPTION_ID>"
 location        = "<CLOUD_REGION>"
 app_name        = "<APPLICATION_NAME>"
 ```
+Optional: `acr_admin = true` can be added to create an admin account for the container registry
+
 Note: `app_name` will be used as the prefix for Azure cloud resources
 
 2. Run `terraform init` in [src/azure](src/azure) to initialize terraform
@@ -58,3 +63,8 @@ After the resources are created, the configuration can be viewed on the [Azure p
 If kubectl is installed, the AKS cluster can be attached with the following command
 * Run `az aks get-credentials --resource-group $(terraform output -raw resource_group_name) --name $(terraform output -raw kubernetes_cluster_name)`
 
+### Login with docker (optional)
+If `acr_admin` is set true, an admin login will be created. You can login to the registry on docker with the following steps
+1. Navigate to [Azure portal](https://portal.azure.com/) and locate the container registry resource
+2. In the menu pane, select access keys under settings
+3. Run the command `docker login <LOGIN_SERVER>` using the server address listed on the above page. When prompted enter either of the provided passwords
