@@ -1,6 +1,6 @@
 
 # jenkins-cloud-create
-Launch supporting infrastructure for cloud-based Jenkins server on AKS and EKS (EKS support coming soon).
+Launch supporting infrastructure for cloud-based Jenkins server on AKS and EKS (EKS support coming soon)
 
 Sister project to containerize existing Jenkins server for use on the cloud: [Mu-Nirvana/jenkin-host-to-container](https://github.com/Mu-Nirvana/jenkins-host-to-container)
 
