@@ -1,6 +1,9 @@
 
 # jenkins-cloud-create
-Launch supporting infrastructure for cloud-based Jenkins server on AKS and EKS (EKS support coming soon).
+Jenkins infrastructure-as-code (IaC) for public cloud infrastructure.
+
+1. AKS 
+2. EKS (EKS support coming soon)
 
 Sister project to containerize existing Jenkins server for use on the cloud: [Mu-Nirvana/jenkin-host-to-container](https://github.com/Mu-Nirvana/jenkins-host-to-container)
 
@@ -10,7 +13,7 @@ Sister project to containerize existing Jenkins server for use on the cloud: [Mu
 * [examples](examples) Contains example files for terraform variable inputs
 
 ## Infrastructure overview
-The terraform projects in this repository configure a basic kubernetes cluster on the cloud, along with a container registry to privately host container images. This is designed to support the creation or migration of a cloud-based Jenkins server
+The Terraform projects in this repository configure a basic kubernetes cluster on the cloud, along with a container registry to privately host container images. This is designed to support the creation or migration of any source Jenkins server to AKS/EKS.
 
 ## Getting started (AKS)
 Setup project and create Azure infrastructure
