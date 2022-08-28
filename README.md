@@ -52,6 +52,9 @@ subscription_id = "<SUBSCRIPTION_ID>"
 location        = "<CLOUD_REGION>"
 app_name        = "<APPLICATION_NAME>"
 ```
+
+Note: *.tfvars are .gitignore'd
+
 Optional: `acr_admin = true` can be added to create an admin account for the container registry
 
 Note: `app_name` will be used as the prefix for Azure cloud resources
@@ -62,11 +65,14 @@ Note: `app_name` will be used as the prefix for Azure cloud resources
 
 After the resources are created, the configuration can be viewed on the [Azure portal](https://portal.azure.com/)
 
-### Attach kubectl (optional)
-If kubectl is installed, the AKS cluster can be attached with the following command
+### Attach kubectl for localhost deployments
+
+The AKS cluster can be attached with the following command
+
 * Run `az aks get-credentials --resource-group $(terraform output -raw resource_group_name) --name $(terraform output -raw kubernetes_cluster_name)`
 
 ### Login with docker (optional)
+
 If `acr_admin` is set true, an admin login will be created. You can login to the registry on docker with the following steps
 1. Navigate to [Azure portal](https://portal.azure.com/) and locate the container registry resource
 2. In the menu pane, select access keys under settings
