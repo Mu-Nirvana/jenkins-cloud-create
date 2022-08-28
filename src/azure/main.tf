@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0.2"
+      version = "~> 3.19.1"
     }
     random = {
       source  = "hashicorp/random"
@@ -18,9 +18,9 @@ provider "azurerm" {
   features {}
 
   subscription_id = var.subscription_id
-  client_id       = var.client_id
-  client_secret   = var.client_secret
-  tenant_id       = var.tenant_id
+  #client_id       = var.client_id
+  #client_secret   = var.client_secret
+  #tenant_id       = var.tenant_id
 }
 
 provider "random" {}
@@ -38,11 +38,11 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "${var.app_name}CR${random_id.app_id.hex}"
+  name                = "${replace(var.app_name, "-", "")}CR${random_id.app_id.hex}"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Premium"
-  admin_enabled = var.acr_admin
+  admin_enabled       = var.acr_admin
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {

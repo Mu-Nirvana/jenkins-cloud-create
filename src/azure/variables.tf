@@ -1,21 +1,3 @@
-variable "client_id" {
-  description = "Client id value for AZ authentication"
-  type        = string
-  sensitive   = true
-}
-
-variable "client_secret" {
-  description = "Client Secret for AZ authentication"
-  type        = string
-  sensitive   = true
-}
-
-variable "tenant_id" {
-  description = "Tenant id for AZ authentication"
-  type        = string
-  sensitive   = true
-}
-
 variable "subscription_id" {
   description = "Subscription id for AZ authentication"
   type        = string
@@ -34,6 +16,6 @@ variable "app_name" {
 
 variable "acr_admin" {
   description = "Controls creation of admin login for the Azure Container Registry"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
