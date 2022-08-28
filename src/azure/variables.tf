@@ -19,3 +19,23 @@ variable "acr_admin" {
   type        = bool
   default     = false
 }
+
+//Required when AZ TF provider gets called from IaC CI/CD
+//variable "client_id" {
+//  description = "Client id value for AZ authentication"
+//  type        = string
+//  sensitive   = true
+//}
+//
+//variable "client_secret" {
+//  description = "Client Secret for AZ authentication"
+//  type        = string
+//  sensitive   = true
+//}
+//
+//variable "tenant_id" {
+//  description = "Tenant id for AZ authentication"
+//  type        = string
+//  sensitive   = true
+//}
+
