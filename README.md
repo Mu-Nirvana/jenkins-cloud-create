@@ -5,7 +5,7 @@ Jenkins infrastructure-as-code (IaC) for public cloud infrastructure.
 1. AKS 
 2. EKS (EKS support coming soon)
 
-Sister project to containerize existing Jenkins server for use on the cloud: [Mu-Nirvana/jenkin-host-to-container](https://github.com/Mu-Nirvana/jenkins-host-to-container)
+Sister project to containerize existing Jenkins server for use on the cloud: `jenkin-host-to-container`.
 
 ## Project structure
 * [src](src) Contains the source terraform
@@ -23,15 +23,17 @@ Setup project and create Azure infrastructure
 * Installed [azure cli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
 ### Clone the repository
-* `git clone https://github.com/Mu-Nirvana/jenkins-cloud-create.git`
+* `git clone https://${YOUR_REPO}/jenkins-cloud-create.git`
 * Navigate to azure directory `cd src/azure`
 
 ### Setup azure account
-1. Login to azure by running `az login`
-2. Copy the relevant subscription id from the output of the above. Ex. `"id": "35akss-subscription-id",`
-3. Run `az account set --subscription "<SUBSCRIPTION_ID>"` to set the correct subscription
-4. Create a service principal with: `az ad sp create-for-rbac --role="Owner" --scopes="/subscriptions/<SUBSCRIPTION_ID>"`
-	The output should look something like: 
+
+1. Onetime set az Azure Gov `az cloud set --name AzureUSGovernment`
+2. Login to azure by running `az login`
+3. Copy the relevant subscription id from the output of the above. Ex. `"id": "35akss-subscription-id",`
+4. Run `az account set --subscription "<SUBSCRIPTION_ID>"` to set the correct subscription
+5. Optionally if using Service Principal (required for CI/CD, not localhost), create a service principal with: `az ad sp create-for-rbac --role="Owner" --scopes="/subscriptions/<SUBSCRIPTION_ID>"`
+    The output should look something like: 
 ```
 Creating 'Contributor' role assignment under scope '/subscriptions/35akss-subscription-id'
 The output includes credentials that you must protect. Be sure that you do not include these credentials in your code or check the credentials into your source control. For more information, see https://aka.ms/azadsp-cli
@@ -44,6 +46,17 @@ The output includes credentials that you must protect. Be sure that you do not i
 ```
 ### Configure terraform and create infrastrcture
 1. Create a file named terraform.tfvars in [src/azure](src/azure) and add the following:
+
+For localhost:
+
+``` tf
+subscription_id = "<SUBSCRIPTION_ID>"
+location        = "<CLOUD_REGION>"
+app_name        = "<APPLICATION_NAME>"
+acr_admin       = true
+```
+
+For SP from CI/CD:
 ``` tf
 client_id       = "<APPID_VALUE>"
 client_secret   = "<PASSWORD_VALUE>"
@@ -59,9 +72,10 @@ Optional: `acr_admin = true` can be added to create an admin account for the con
 
 Note: `app_name` will be used as the prefix for Azure cloud resources
 
-2. Run `terraform init` in [src/azure](src/azure) to initialize terraform
-3. Run `terraform apply` and review infrastructure plan
-4. Type `yes` to continue if plan is correct
+2. Install Terraform if required [here](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+3. Run `terraform init` in [src/azure](src/azure) to initialize terraform
+4. Run `terraform apply` and review infrastructure plan
+5. Type `yes` to continue if plan is correct
 
 After the resources are created, the configuration can be viewed on the [Azure portal](https://portal.azure.com/)
 
@@ -69,7 +83,8 @@ After the resources are created, the configuration can be viewed on the [Azure p
 
 The AKS cluster can be attached with the following command
 
-* Run `az aks get-credentials --resource-group $(terraform output -raw resource_group_name) --name $(terraform output -raw kubernetes_cluster_name)`
+* Run `az aks get-credentials --resource-group $(terraform output -raw resource_group_name) --name $(terraform output -raw kubernetes_cluster_name)`, 
+e.g., `az aks get-credentials --resource-group NDFS-Innovation-LabRG-c4d4ace3 --name NDFS-Innovation-LabAKS-c4d4ace3`
 
 ### Login with docker (optional)
 
